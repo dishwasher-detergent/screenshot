@@ -20,6 +20,8 @@ export default async ({ req, res, log, error }: Context) => {
     https = true;
   }
 
+  const cache = 1440; //24 hours in seconds
+
   const queryParams = req.query;
 
   const fullPath = req.path;
@@ -91,6 +93,7 @@ export default async ({ req, res, log, error }: Context) => {
       if (screenshot) {
         return res.send(screenshot, 200, {
           'Content-Type': `image/${queryParams.format ?? 'png'}`,
+          'Cache-Control': `public, max-age=${cache}`,
         });
       } else {
         return res.send('Could not generate screenshot.', 500);
@@ -99,7 +102,6 @@ export default async ({ req, res, log, error }: Context) => {
 
     if (path == 'video') {
       const recorder = new PuppeteerScreenRecorder(page);
-      recorder.start();
     }
 
     if (path == 'metadata') {
@@ -120,7 +122,10 @@ export default async ({ req, res, log, error }: Context) => {
         return metaTagsArray;
       });
 
-      return res.json(metadata);
+      return res.send(metadata, 200, {
+        'Content-Type': 'application/json',
+        'Cache-Control': `public, max-age=${cache}`,
+      });
     }
   }
 
