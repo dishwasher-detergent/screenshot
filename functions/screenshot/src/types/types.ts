@@ -7,6 +7,12 @@ export interface Context {
 
 export interface MetadataParams {}
 
+export interface Metadata {
+  name?: string;
+  propety?: string;
+  content: string;
+}
+
 export interface ScreenshotParams {
   width: number;
   height: number;

@@ -1,7 +1,8 @@
 import { execSync } from 'child_process';
 import { accessSync, constants } from 'fs';
-
 import { ScreenshotOptions } from 'puppeteer';
+import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder';
+
 import { spawnBrowser } from './lib/browser.js';
 import { parseScreenshotQueryParams } from './lib/utils.js';
 import { Context } from './types/types.js';
@@ -21,23 +22,25 @@ export default async ({ req, res, log, error }: Context) => {
 
   const queryParams = req.query;
 
-  const path = req.path.replace(/https?:\/\//, '');
-  const pathArray = path.split('/').filter((x: string) => x !== '');
+  const fullPath = req.path;
 
-  const url = `http${https ? 's' : ''}://${pathArray[1]}`;
+  const firstSlashIndex = fullPath.indexOf('/') + 1;
+  let secondSlashIndex = fullPath.indexOf('/', firstSlashIndex + 1);
+
+  const path = req.path.slice(firstSlashIndex, secondSlashIndex);
+  const url = fullPath.slice(secondSlashIndex + 1);
+
+  log(path);
+  log(url);
 
   if (!url) {
     return res.send('No URL specified!', 500);
   }
 
-  if (
-    pathArray[0] == 'metadata' ||
-    pathArray[0] == 'screenshot' ||
-    pathArray[0] == 'video'
-  ) {
+  if (path == 'metadata' || path == 'screenshot' || path == 'video') {
     const { browser, page } = await spawnBrowser(url);
 
-    if (pathArray[0] == 'screenshot') {
+    if (path == 'screenshot') {
       let screenshot;
       const params = parseScreenshotQueryParams(queryParams);
 
@@ -94,10 +97,30 @@ export default async ({ req, res, log, error }: Context) => {
       }
     }
 
-    if (pathArray[0] == 'video') {
+    if (path == 'video') {
+      const recorder = new PuppeteerScreenRecorder(page);
+      recorder.start();
     }
 
-    if (pathArray[0] == 'metadata') {
+    if (path == 'metadata') {
+      const metadata = await page.evaluate(() => {
+        const metaTagsArray: any[] = [];
+        const metaTags = document.querySelectorAll('meta');
+
+        metaTags.forEach((metaTag) => {
+          const attributes: any = {};
+
+          for (const attr of metaTag.attributes) {
+            attributes[attr.name] = attr.value;
+          }
+
+          metaTagsArray.push(attributes);
+        });
+
+        return metaTagsArray;
+      });
+
+      return res.json(metadata);
     }
   }
 

@@ -13,6 +13,7 @@
     "jsdom": "^22.1.0",
     "node-appwrite": "^11.0.0",
     "puppeteer": "13.4.1",
+    "puppeteer-screen-recorder": "^2.1.2",
     "typescript": "^5.2.2"
   },
   "devDependencies": {
