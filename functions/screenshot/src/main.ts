@@ -14,12 +14,6 @@ export default async ({ req, res, log, error }: Context) => {
     execSync('apk add --no-cache nss udev ttf-freefont chromium');
   }
 
-  let https = false;
-
-  if (req.path.includes('https')) {
-    https = true;
-  }
-
   const cache = 1440; //24 hours in seconds
 
   const queryParams = req.query;
@@ -31,9 +25,6 @@ export default async ({ req, res, log, error }: Context) => {
 
   const path = req.path.slice(firstSlashIndex, secondSlashIndex);
   const url = fullPath.slice(secondSlashIndex + 1);
-
-  log(path);
-  log(url);
 
   if (!url) {
     return res.send('No URL specified!', 500);
