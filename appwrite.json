@@ -1,0 +1,26 @@
+{
+    "projectId": "screenshot",
+    "projectName": "",
+    "functions": [
+        {
+            "$id": "screenshot",
+            "name": "screenshot",
+            "runtime": "node-18.0",
+            "execute": [
+                "any"
+            ],
+            "events": [],
+            "schedule": "",
+            "timeout": 30,
+            "enabled": true,
+            "logging": true,
+            "entrypoint": "dist/main.js",
+            "commands": "npm install --ignore-scripts && npm run build",
+            "ignore": [
+                "node_modules",
+                ".npm"
+            ],
+            "path": "functions/screenshot"
+        }
+    ]
+}
