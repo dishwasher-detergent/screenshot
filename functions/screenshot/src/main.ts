@@ -89,17 +89,13 @@ export default async ({ req, res, log, error }: Context) => {
     }
   }
 
-  log(secondSlashIndex);
-  log(fullPath);
-  log(/\.html$|\.css$|\.js$/.test(fullPath));
-
   if (secondSlashIndex == -1 && /\.html$|\.css$|\.js$/.test(fullPath)) {
     const file = fullPath.substring(1);
 
     const extension = extname(file);
 
     return res.send(getStaticFile(file), 200, {
-      'Content-Type': `text/${extension}; charset=utf-8`,
+      'Content-Type': `text/${extension.substring(1)}; charset=utf-8`,
       'Access-Control-Allow-Origin': '*',
     });
   }
