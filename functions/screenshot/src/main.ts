@@ -1,10 +1,9 @@
 import { execSync } from 'child_process';
 import { accessSync, constants } from 'fs';
-import { ScreenshotOptions } from 'puppeteer';
 import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder';
 
-import { spawnBrowser } from './lib/browser.js';
-import { parseScreenshotQueryParams } from './lib/utils.js';
+import { spawnBrowser, takeScreenshot } from './lib/browser.js';
+import { getStaticFile, parseScreenshotQueryParams } from './lib/utils.js';
 import { Context } from './types/types.js';
 
 export default async ({ req, res, log, error }: Context) => {
@@ -34,60 +33,26 @@ export default async ({ req, res, log, error }: Context) => {
     const { browser, page } = await spawnBrowser(url);
 
     if (path == 'screenshot') {
-      let screenshot;
-      const params = parseScreenshotQueryParams(queryParams);
-
-      const screenShotOptions: ScreenshotOptions = {
-        type: params.format,
-        omitBackground: params.omitBackground,
-        fullPage: params.fullPage,
-      };
-
-      const clip = params.clip ? { x: params.clipX, y: params.clipY } : {};
-
-      if (screenShotOptions.type != 'png') {
-        screenShotOptions.quality = params.quality;
-      }
-
       try {
-        page.setViewport({
-          width: params.width,
-          height: params.height,
-          deviceScaleFactor: params.scale,
-        });
-      } catch (err) {
-        error((err as Error).message);
-      }
+        const params = parseScreenshotQueryParams(queryParams);
+        const screenshot = await takeScreenshot(page, params);
+        await browser.close();
 
-      try {
-        page.emulateMediaFeatures([
-          {
-            name: 'prefers-color-scheme',
-            value: params.darkModeString,
-          },
-        ]);
-      } catch (err) {
-        error((err as Error).message);
-      }
-
-      try {
-        screenshot = await page.screenshot({
-          ...screenShotOptions,
-          ...clip,
-        });
-      } catch (err) {
-        error((err as Error).message);
-      }
-
-      await browser.close();
-
-      if (screenshot) {
         return res.send(screenshot, 200, {
           'Content-Type': `image/${queryParams.format ?? 'png'}`,
           'Cache-Control': `public, max-age=${cache}`,
         });
-      } else {
-        return res.send('Could not generate screenshot.', 500);
+      } catch (err) {
+        return res.send(
+          {
+            error: (err as Error).message,
+          },
+          500,
+          {
+            'Content-Type': 'application/json',
+            'Cache-Control': `public, max-age=${cache}`,
+          }
+        );
       }
     }
 
@@ -120,5 +85,17 @@ export default async ({ req, res, log, error }: Context) => {
     }
   }
 
-  return res.send('Hello from test', 200);
+  if (secondSlashIndex == -1 && /\.html$|\.css$|\.js$/.test(fullPath)) {
+    const file = fullPath.substring(1);
+
+    const extension = path.extname(file);
+
+    return res.send(getStaticFile(file), 200, {
+      'Content-Type': `text/${extension}; charset=utf-8`,
+    });
+  }
+
+  return res.send(getStaticFile('index.html'), 200, {
+    'Content-Type': 'text/html; charset=utf-8',
+  });
 };
