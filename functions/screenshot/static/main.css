@@ -188,6 +188,7 @@ p {
   flex-wrap: nowrap;
   gap: 0.25rem;
   align-items: center;
+  white-space: nowrap;
 }
 
 .hidden {
