@@ -10,10 +10,10 @@ input.addEventListener('keyup', function (event) {
 
   document.getElementById(
     'metadata_url'
-  ).value = `https://api.kennybass.xyz/metadata/${value}`;
+  ).value = `https://api.jibby.space/metadata/${value}`;
   document.getElementById(
     'screenshot_url'
-  ).value = `https://api.kennybass.xyz/screenshot/${value}`;
+  ).value = `https://api.jibby.space/screenshot/${value}`;
 
   setDisplayUrl(value);
 
@@ -37,7 +37,7 @@ function generate() {
 
 async function generateMetadata(value) {
   setMetadataLoading(true);
-  const response = await fetch(`https://api.kennybass.xyz/metadata/${value}`);
+  const response = await fetch(`https://api.jibby.space/metadata/${value}`);
   const metadata = await response.json();
 
   const jsonString = JSON.stringify(metadata, null, 2);
@@ -53,7 +53,7 @@ function generateScreenshot(value) {
   screenshot.innerHTML = '';
 
   const child = document.createElement('img');
-  child.src = `https://api.kennybass.xyz/screenshot/${value}`;
+  child.src = `https://api.jibby.space/screenshot/${value}`;
   screenshot.appendChild(child);
 
   child.onload = () => {
@@ -67,7 +67,7 @@ function generateVideo(value) {
   video.innerHTML = '';
 
   const child = document.createElement('video');
-  child.src = `https://api.kennybass.xyz/video/${value}`;
+  child.src = `https://api.jibby.space/video/${value}`;
   child.controls = true;
   child.autoplay = true;
   child.loop = true;

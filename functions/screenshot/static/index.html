@@ -71,7 +71,7 @@
             id="metadata_url"
             class="hidden"
             readonly
-            value="https://api.kennybass.xyz/metadata/https://kennethbass.com"
+            value="https://api.jibby.space/metadata/https://kennethbass.com"
           />
           <p>
             https://kennybass.xyz/metadata/<span
@@ -121,7 +121,7 @@
             class="hidden"
             type="text"
             readonly
-            value="https://api.kennybass.xyz/screenshot/https://kennethbass.com"
+            value="https://api.jibby.space/screenshot/https://kennethbass.com"
           />
           <p>
             https://kennybass.xyz/screenshot/<span
@@ -283,7 +283,7 @@
             class="hidden"
             type="text"
             readonly
-            value="https://api.kennybass.xyz/screenshot/https://kennethbass.com"
+            value="https://api.jibby.space/screenshot/https://kennethbass.com"
           />
           <p>
             https://kennybass.xyz/video/<span
@@ -363,7 +363,28 @@
                 <p class="pill default">false</p>
               </div>
             </div>
+            <div class="row">
+              <div>
+                <p>animation</p>
+              </div>
+              <div>
+                <p class="pill type">string</p>
+              </div>
+              <div>
+                <p class="pill default">1000,500,0,smooth</p>
+              </div>
+            </div>
           </div>
+          <p class="description">
+            Animation values are created in the format: wait (the duration it
+            stays after an animation has played), top (how many pixels to go
+            from the top), left (how many pixles to go from the left), behavior
+            (smooth, instant, auto)
+          </p>
+          <p class="description">
+            Animations can be chained together using a colon. Example
+            1000,100,0,smooth:1000,300,0,smooth
+          </p>
         </div>
         <div class="result_container">
           <h3 class="title result">

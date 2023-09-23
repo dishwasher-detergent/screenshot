@@ -310,6 +310,12 @@ pre {
   color: #020617;
 }
 
+.description {
+  color: #fff;
+  font-size: 1rem;
+  padding: 1rem 0;
+}
+
 .loading {
   width: auto;
   height: 100%;
