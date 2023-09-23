@@ -64,6 +64,7 @@ export default async ({ req, res, log, error }: Context) => {
     if (path == 'video') {
       try {
         const params = parseVideoQueryParams(queryParams);
+        log(params);
         const videoFile = await takeVideo(page, params);
 
         await browser.close();

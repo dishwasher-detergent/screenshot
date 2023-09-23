@@ -275,12 +275,20 @@ pre {
   font-weight: bold;
 }
 
-.type {
+.pill {
   padding: 0.25rem 0.5rem;
   border-radius: 0.5rem;
-  background-color: #6ee7b7;
-  color: #065f46;
   font-weight: bold;
+}
+
+.pill.type {
+  background-color: #10b981;
+  color: #020617;
+}
+
+.pill.default {
+  background-color: #cbd5e1;
+  color: #020617;
 }
 
 .loading {

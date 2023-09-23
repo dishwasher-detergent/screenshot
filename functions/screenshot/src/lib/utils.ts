@@ -171,7 +171,7 @@ export const parseVideoQueryParams = (queryParams: any) => {
       `DarkMode must be a "true" or "false", you passed in "${queryParams.darkMode}".`
     );
 
-  const animation = queryParams.animation;
+  const animation = queryParams.animation ? queryParams.animation : null;
 
   const darkModeString = darkMode ? 'dark' : 'light';
 

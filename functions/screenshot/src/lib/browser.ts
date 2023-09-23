@@ -68,7 +68,7 @@ export const takeScreenshot = async (page: Page, params: ScreenshotParams) => {
       ...clip,
     });
   } catch (err) {
-    throw new Error('Failed to take screenshot');
+    throw new Error('Failed to take screenshot.');
   }
 
   return screenshot;
@@ -119,7 +119,7 @@ export const takeVideo = async (page: Page, params: VideoParams) => {
     await animate(page, animations);
     await recorder.stop();
   } catch (err) {
-    throw new Error('Failed to take screenshot');
+    throw new Error('Failed to take video.');
   }
 
   try {
@@ -136,16 +136,18 @@ export const takeVideo = async (page: Page, params: VideoParams) => {
 const animate = async (page: Page, animations: Animation[]) => {
   await wait(500);
   for (let i = 0; i < animations.length; i++) {
-    const animation = animations[i];
-
-    await page.evaluate(() => {
-      window.scrollBy({
-        top: animation.top,
-        left: animation.left,
-        behavior: animation.behavior,
-      });
-    });
-    await wait(animation.wait);
+    const { wait: waitMs, top, left, behavior } = animations[i];
+    await page.evaluate(
+      ({ top, left, behavior }) => {
+        window.scrollBy({
+          top: top,
+          left: left,
+          behavior: behavior,
+        });
+      },
+      { top, left, behavior }
+    );
+    await wait(waitMs);
   }
 };
 
