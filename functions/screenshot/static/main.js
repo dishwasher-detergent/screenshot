@@ -56,7 +56,9 @@ function generateScreenshot(value) {
   child.src = `https://api.kennybass.xyz/screenshot/${value}`;
   screenshot.appendChild(child);
 
-  setScreenshotLoading(false);
+  child.onload = () => {
+    setScreenshotLoading(false);
+  };
 }
 
 function generateVideo(value) {
@@ -71,7 +73,9 @@ function generateVideo(value) {
   child.loop = true;
   video.appendChild(child);
 
-  setVideoLoading(false);
+  child.onload = () => {
+    setVideoLoading(false);
+  };
 }
 
 function setDisplayUrl(value) {
