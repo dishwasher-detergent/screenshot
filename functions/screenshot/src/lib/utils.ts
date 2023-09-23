@@ -6,7 +6,7 @@ import { ScreenshotParams } from '../types/types.js';
 
 export const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
-export const staticFolder = path.join(__dirname, '../../static/dist');
+export const staticFolder = path.join(__dirname, '../../static');
 
 export const fetchHTML = (url: string): Promise<string> => {
   return new Promise((resolve, reject) => {

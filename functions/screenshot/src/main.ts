@@ -2,6 +2,7 @@ import { execSync } from 'child_process';
 import { accessSync, constants } from 'fs';
 import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder';
 
+import { extname } from 'path';
 import { spawnBrowser, takeScreenshot } from './lib/browser.js';
 import { getStaticFile, parseScreenshotQueryParams } from './lib/utils.js';
 import { Context } from './types/types.js';
@@ -85,10 +86,14 @@ export default async ({ req, res, log, error }: Context) => {
     }
   }
 
+  log(secondSlashIndex);
+  log(fullPath);
+  log(/\.html$|\.css$|\.js$/.test(fullPath));
+
   if (secondSlashIndex == -1 && /\.html$|\.css$|\.js$/.test(fullPath)) {
     const file = fullPath.substring(1);
 
-    const extension = path.extname(file);
+    const extension = extname(file);
 
     return res.send(getStaticFile(file), 200, {
       'Content-Type': `text/${extension}; charset=utf-8`,
