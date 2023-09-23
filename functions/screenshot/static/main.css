@@ -169,6 +169,17 @@ button,
   -webkit-appearance: button;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+  padding: 0;
+}
+
 /**
 Remove the inner border and padding in Firefox.
 */
@@ -266,6 +277,8 @@ summary {
 .wrapper {
   font-family: Arial, Helvetica, sans-serif;
   background-color: #020617;
+  padding: 0 2rem;
+  font-family: 'Nunito', sans-serif;
 }
 
 .main {
@@ -283,12 +296,39 @@ summary {
   height: 40rem;
   padding: 2rem;
   border-radius: 0 0 2rem 2rem;
+  border-bottom: solid 1px #fff;
+}
+
+.banner .content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+}
+
+.content .title {
+  font-size: 8rem;
+  font-weight: 900;
+  color: #fff;
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  color: #f5f3ff;
 }
 
 .title {
   font-size: 3rem;
   color: #fff;
-  margin-top: 2rem;
+}
+
+.title.result {
+  font-size: 1.5rem;
+  color: #fff;
 }
 
 .search_container {
@@ -296,16 +336,17 @@ summary {
   flex-direction: row;
   flex-wrap: nowrap;
   gap: 1rem;
-  padding: 2rem;
+  padding: 1rem;
   background-color: #0f172a;
   border: #1e293b solid 1px;
   border-radius: 2rem;
   width: 80%;
-  height: 8rem;
-  margin-top: -4rem;
+  height: 6rem;
+  margin-top: -3rem;
 }
 
-.search_container .search {
+.search_container .search,
+.url {
   flex: 1 1 0%;
   height: 100%;
   border: #334155 solid 1px;
@@ -342,6 +383,188 @@ summary {
 .search_container .search:focus {
   outline: #7c3aed solid 2px;
   outline-offset: 0.25rem;
+}
+
+.search_container .search_button:disabled {
+  background-color: #4b5563;
+  border: #4b5563 solid 1px;
+  cursor: not-allowed;
+}
+
+.metadata_container,
+.screenshot_container,
+.video_container {
+  width: 100%;
+  padding: 2rem 0;
+  border-bottom: 1px solid #1e293b;
+}
+
+.metadata_container .title,
+.screenshot_container .title,
+.video_container .title {
+  padding-bottom: 1rem;
+}
+
+.url_container {
+  position: relative;
+  width: 100%;
+}
+
+.url {
+  width: 100%;
+}
+
+.url {
+  overflow: hidden;
+  padding-right: 3.5rem;
+}
+
+.url p {
+  height: 100%;
+  overflow-x: auto;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.copy {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 2.5rem;
+  width: 2.5rem;
+  border-radius: 0.75rem;
+  color: #fff;
+  cursor: pointer;
+  border: #64748b solid 1px;
+  background-color: #475569;
+}
+
+.result_container,
+.option_container {
+  width: 100%;
+  padding-top: 2rem;
+  position: relative;
+}
+
+.result {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+}
+
+pre {
+  margin: 0;
+  padding: 0;
+}
+
+.code {
+  width: 100%;
+  max-height: 20rem;
+  border-radius: 1rem;
+  overflow: auto;
+  border: 1px solid #1e293b;
+  margin: 0;
+  padding: 0;
+  background-color: #0f172a !important;
+}
+
+.media {
+  width: 100%;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background-color: #0f172a;
+  border-radius: 1rem;
+  border: 1px solid #1e293b;
+}
+
+.media img,
+.media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.options {
+  border-left: 2px solid #1e293b;
+  padding: 0;
+  margin: 0;
+  padding-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  color: #fff;
+  list-style: none;
+}
+
+.options .option {
+  font-family: monospace;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.type {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  background-color: #6ee7b7;
+  color: #065f46;
+  font-weight: bold;
+}
+
+.loading {
+  width: auto;
+  height: 100%;
+  aspect-ratio: 1/1;
+  border: 5px solid #fff;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: none;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mobile */
+
+@media screen and (max-width: 768px) {
+  .wrapper {
+    padding: 0 1rem;
+  }
+
+  .banner {
+    height: 30rem;
+  }
+
+  .search_container {
+    flex-direction: column;
+    height: auto;
+    margin-top: -5rem;
+    width: 90%;
+  }
+
+  .search_container .search_button {
+    justify-content: center;
+  }
 }
 
 .radial {

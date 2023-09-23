@@ -4,17 +4,46 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <script defer src="./test.js"></script>
+    <script defer src="./main.js"></script>
     <link rel="stylesheet" href="./main.css" />
+
+    <!-- HightlightJS import -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/tokyo-night-dark.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+
+    <script>
+      hljs.highlightAll();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/pretty-print-json@2.0.3/dist/pretty-print-json.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body class="wrapper">
     <main class="main">
       <div class="banner radial">
-        <h1 class="title">Product Name</h1>
+        <div class="content">
+          <h1 class="title">Jibby</h1>
+          <p class="subtitle">Get screenshots of any site with ease.</p>
+        </div>
       </div>
-      <div class="search_container">
-        <input type="text" class="search" value="https://kennethbass.com" />
-        <button class="search_button" onclick="test()">
+      <section class="search_container">
+        <input
+          type="url"
+          class="search"
+          id="search"
+          value="https://kennethbass.com"
+          placeholder="https://kennethbass.com"
+        />
+        <button id="search_button" class="search_button" onclick="generate()">
           Generate
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +62,191 @@
             <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
           </svg>
         </button>
-      </div>
+      </section>
+      <section class="metadata_container">
+        <h2 class="title">Metadata</h2>
+        <div class="url_container url">
+          <input
+            id="metadata_url"
+            class="hidden"
+            readonly
+            value="https://api.kennybass.xyz/metadata/https://kennethbass.com"
+          />
+          <p>
+            https://kennybass.xyz/metadata/<span
+              id="display_url"
+              class="type"
+            ></span>
+          </p>
+          <button class="copy" onclick="copyToClipboard('metadata_url')">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-clipboard"
+            >
+              <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
+              <path
+                d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+              />
+            </svg>
+          </button>
+        </div>
+        <div class="option_container">
+          <h3 class="title result">Options</h3>
+          <ul class="options">
+            <li class="option">No options avaliable.</li>
+          </ul>
+        </div>
+        <div class="result_container">
+          <h3 class="title result">
+            Result<span
+              style="height: 20px"
+              class="loading metadata_loading"
+            ></span>
+          </h3>
+          <pre><code class="code language-json" id="metadata"></code></pre>
+        </div>
+      </section>
+      <section class="screenshot_container">
+        <h2 class="title">Screenshot</h2>
+        <div class="url_container url">
+          <input
+            id="screenshot_url"
+            class="hidden"
+            type="text"
+            readonly
+            value="https://api.kennybass.xyz/screenshot/https://kennethbass.com"
+          />
+          <p>
+            https://kennybass.xyz/screenshot/<span
+              id="display_url"
+              class="type"
+            ></span>
+          </p>
+          <button class="copy" onclick="copyToClipboard('screenshot_url')">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-clipboard"
+            >
+              <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
+              <path
+                d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+              />
+            </svg>
+          </button>
+        </div>
+        <div class="option_container">
+          <h3 class="title result">Options</h3>
+          <ul class="options">
+            <li class="option">width: <span class="type">number</span></li>
+            <li class="option">height: <span class="type">number</span></li>
+            <li class="option">scale: <span class="type">number</span></li>
+            <li class="option">clip: <span class="type">boolean</span></li>
+            <li class="option">clipX: <span class="type">number</span></li>
+            <li class="option">clipY: <span class="type">number</span></li>
+            <li class="option">quality: <span class="type">number</span></li>
+            <li class="option">
+              format: <span class="type">'jpeg' | 'png' | 'webp'</span>
+            </li>
+            <li class="option">fullPage: <span class="type">boolean</span></li>
+            <li class="option">
+              omitBackground: <span class="type">boolean</span>
+            </li>
+            <li class="option">darkMode: <span class="type">boolean</span></li>
+          </ul>
+        </div>
+        <div class="result_container">
+          <h3 class="title result">
+            Result<span
+              style="height: 20px"
+              class="loading screenshot_loading"
+            ></span>
+          </h3>
+          <div id="screenshot" class="media"></div>
+        </div>
+      </section>
+      <section class="video_container">
+        <h2 class="title">Video</h2>
+        <div class="url_container url">
+          <input
+            id="video_url"
+            class="hidden"
+            type="text"
+            readonly
+            value="https://api.kennybass.xyz/screenshot/https://kennethbass.com"
+          />
+          <p>
+            https://kennybass.xyz/video/<span
+              id="display_url"
+              class="type"
+            ></span>
+          </p>
+          <button class="copy" onclick="copyToClipboard('video_url')">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-clipboard"
+            >
+              <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
+              <path
+                d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+              />
+            </svg>
+          </button>
+        </div>
+        <div class="option_container">
+          <h3 class="title result">Options</h3>
+          <ul class="options">
+            <li class="option">width: <span class="type">number</span></li>
+            <li class="option">height: <span class="type">number</span></li>
+            <li class="option">scale: <span class="type">number</span></li>
+            <li class="option">clip: <span class="type">boolean</span></li>
+            <li class="option">clipX: <span class="type">number</span></li>
+            <li class="option">clipY: <span class="type">number</span></li>
+            <li class="option">quality: <span class="type">number</span></li>
+            <li class="option">
+              format: <span class="type">'jpeg' | 'png' | 'webp'</span>
+            </li>
+            <li class="option">fullPage: <span class="type">boolean</span></li>
+            <li class="option">
+              omitBackground: <span class="type">boolean</span>
+            </li>
+            <li class="option">darkMode: <span class="type">boolean</span></li>
+          </ul>
+        </div>
+        <div class="result_container">
+          <h3 class="title result">
+            Result<span
+              style="height: 20px"
+              class="loading metadata_loading"
+            ></span>
+          </h3>
+          <div id="video" class="media"></div>
+        </div>
+      </section>
     </main>
+    <footer>test</footer>
   </body>
 </html>

@@ -42,6 +42,7 @@ export default async ({ req, res, log, error }: Context) => {
         return res.send(screenshot, 200, {
           'Content-Type': `image/${queryParams.format ?? 'png'}`,
           'Cache-Control': `public, max-age=${cache}`,
+          'Access-Control-Allow-Origin': '*',
         });
       } catch (err) {
         return res.send(
@@ -52,6 +53,7 @@ export default async ({ req, res, log, error }: Context) => {
           {
             'Content-Type': 'application/json',
             'Cache-Control': `public, max-age=${cache}`,
+            'Access-Control-Allow-Origin': '*',
           }
         );
       }
@@ -82,6 +84,7 @@ export default async ({ req, res, log, error }: Context) => {
       return res.send(metadata, 200, {
         'Content-Type': 'application/json',
         'Cache-Control': `public, max-age=${cache}`,
+        'Access-Control-Allow-Origin': '*',
       });
     }
   }
@@ -97,10 +100,12 @@ export default async ({ req, res, log, error }: Context) => {
 
     return res.send(getStaticFile(file), 200, {
       'Content-Type': `text/${extension}; charset=utf-8`,
+      'Access-Control-Allow-Origin': '*',
     });
   }
 
   return res.send(getStaticFile('index.html'), 200, {
     'Content-Type': 'text/html; charset=utf-8',
+    'Access-Control-Allow-Origin': '*',
   });
 };
