@@ -1,9 +1,8 @@
 import { execSync } from 'child_process';
 import { accessSync, constants } from 'fs';
-import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder';
 
 import { extname } from 'path';
-import { spawnBrowser, takeScreenshot } from './lib/browser.js';
+import { spawnBrowser, takeScreenshot, takeVideo } from './lib/browser.js';
 import { getStaticFile, parseScreenshotQueryParams } from './lib/utils.js';
 import { Context } from './types/types.js';
 
@@ -60,7 +59,30 @@ export default async ({ req, res, log, error }: Context) => {
     }
 
     if (path == 'video') {
-      const recorder = new PuppeteerScreenRecorder(page);
+      try {
+        const params = parseScreenshotQueryParams(queryParams);
+        const videoFile = await takeVideo(page, params);
+
+        await browser.close();
+
+        return res.send(videoFile, 200, {
+          'Content-Type': 'video/mp4',
+          'Cache-Control': `public, max-age=${cache}`,
+          'Access-Control-Allow-Origin': '*',
+        });
+      } catch (err) {
+        return res.send(
+          {
+            error: (err as Error).message,
+          },
+          500,
+          {
+            'Content-Type': 'application/json',
+            'Cache-Control': `public, max-age=${cache}`,
+            'Access-Control-Allow-Origin': '*',
+          }
+        );
+      }
     }
 
     if (path == 'metadata') {

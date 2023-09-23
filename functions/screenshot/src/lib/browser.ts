@@ -1,5 +1,8 @@
+import { readFileSync } from 'fs';
 import puppeteer, { Page, ScreenshotOptions } from 'puppeteer';
+import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder';
 import { ScreenshotParams } from '../types/types.js';
+import { tempFolder } from './utils.js';
 
 export const spawnBrowser = async (url: string) => {
   const browser = await puppeteer.launch({
@@ -69,4 +72,84 @@ export const takeScreenshot = async (page: Page, params: ScreenshotParams) => {
   }
 
   return screenshot;
+};
+
+export const takeVideo = async (page: Page, params: ScreenshotParams) => {
+  let video: string | Buffer | undefined = undefined;
+
+  const screenShotOptions: ScreenshotOptions = {
+    type: params.format,
+    omitBackground: params.omitBackground,
+    fullPage: params.fullPage,
+  };
+
+  if (screenShotOptions.type != 'png') {
+    screenShotOptions.quality = params.quality;
+  }
+
+  try {
+    page.setViewport({
+      width: params.width,
+      height: params.height,
+      deviceScaleFactor: params.scale,
+    });
+  } catch (err) {
+    throw new Error('Failed to set page viewport.');
+  }
+
+  try {
+    page.emulateMediaFeatures([
+      {
+        name: 'prefers-color-scheme',
+        value: params.darkModeString,
+      },
+    ]);
+  } catch (err) {
+    throw new Error('Failed to set darkmode.');
+  }
+
+  const fileName = createFileName();
+
+  try {
+    const recorder = new PuppeteerScreenRecorder(page);
+    await recorder.start(`${tempFolder}/${fileName}.mp4`);
+    await animate(page);
+    await recorder.stop();
+  } catch (err) {
+    throw new Error('Failed to take screenshot');
+  }
+
+  try {
+    video = readFileSync(`${tempFolder}/${fileName}.mp4`, null);
+  } catch (err) {
+    throw new Error('Failed to read video file.');
+  }
+
+  return video;
+};
+
+const animate = async (page: Page) => {
+  await wait(500);
+  await page.evaluate(() => {
+    window.scrollBy({ top: 500, left: 0, behavior: 'smooth' });
+  });
+  await wait(500);
+  await page.evaluate(() => {
+    window.scrollBy({ top: 1000, left: 0, behavior: 'smooth' });
+  });
+  await wait(1000);
+};
+
+const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+const createFileName = () => {
+  const min = 1000000;
+  const max = 9999999;
+  const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+
+  const date = Date.now().toString();
+
+  const unique = `${randomNumber}${date}`;
+
+  return unique;
 };
