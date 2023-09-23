@@ -3,7 +3,11 @@ import { accessSync, constants } from 'fs';
 
 import { extname } from 'path';
 import { spawnBrowser, takeScreenshot, takeVideo } from './lib/browser.js';
-import { getStaticFile, parseScreenshotQueryParams } from './lib/utils.js';
+import {
+  getStaticFile,
+  parseScreenshotQueryParams,
+  parseVideoQueryParams,
+} from './lib/utils.js';
 import { Context } from './types/types.js';
 
 export default async ({ req, res, log, error }: Context) => {
@@ -51,7 +55,6 @@ export default async ({ req, res, log, error }: Context) => {
           500,
           {
             'Content-Type': 'application/json',
-            'Cache-Control': `public, max-age=${cache}`,
             'Access-Control-Allow-Origin': '*',
           }
         );
@@ -60,7 +63,7 @@ export default async ({ req, res, log, error }: Context) => {
 
     if (path == 'video') {
       try {
-        const params = parseScreenshotQueryParams(queryParams);
+        const params = parseVideoQueryParams(queryParams);
         const videoFile = await takeVideo(page, params);
 
         await browser.close();
@@ -78,7 +81,6 @@ export default async ({ req, res, log, error }: Context) => {
           500,
           {
             'Content-Type': 'application/json',
-            'Cache-Control': `public, max-age=${cache}`,
             'Access-Control-Allow-Origin': '*',
           }
         );

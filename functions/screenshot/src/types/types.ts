@@ -28,4 +28,18 @@ export interface ScreenshotParams {
   darkModeString: 'dark' | 'light';
 }
 
-export interface VideoParams {}
+export interface VideoParams {
+  width: number;
+  height: number;
+  scale: number;
+  darkMode: boolean;
+  darkModeString: 'dark' | 'light';
+  animation: string;
+}
+
+export interface Animation {
+  wait: number;
+  top: number;
+  left: number;
+  behavior: ScrollBehavior;
+}

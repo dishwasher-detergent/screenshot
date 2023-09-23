@@ -32,6 +32,7 @@ function generate() {
   const value = document.getElementById('search').value;
   generateMetadata(value);
   generateScreenshot(value);
+  generateVideo(value);
 }
 
 async function generateMetadata(value) {
@@ -56,6 +57,21 @@ function generateScreenshot(value) {
   screenshot.appendChild(child);
 
   setScreenshotLoading(false);
+}
+
+function generateVideo(value) {
+  setVideoLoading(true);
+  const video = document.getElementById('video');
+  video.innerHTML = '';
+
+  const child = document.createElement('video');
+  child.src = `https://api.kennybass.xyz/video/${value}`;
+  child.controls = true;
+  child.autoplay = true;
+  child.loop = true;
+  video.appendChild(child);
+
+  setVideoLoading(false);
 }
 
 function setDisplayUrl(value) {

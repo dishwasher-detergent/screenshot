@@ -1,7 +1,7 @@
-import { readFileSync } from 'fs';
+import { readFileSync, unlinkSync } from 'fs';
 import puppeteer, { Page, ScreenshotOptions } from 'puppeteer';
 import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder';
-import { ScreenshotParams } from '../types/types.js';
+import { Animation, ScreenshotParams, VideoParams } from '../types/types.js';
 import { tempFolder } from './utils.js';
 
 export const spawnBrowser = async (url: string) => {
@@ -74,18 +74,16 @@ export const takeScreenshot = async (page: Page, params: ScreenshotParams) => {
   return screenshot;
 };
 
-export const takeVideo = async (page: Page, params: ScreenshotParams) => {
+export const takeVideo = async (page: Page, params: VideoParams) => {
   let video: string | Buffer | undefined = undefined;
-
-  const screenShotOptions: ScreenshotOptions = {
-    type: params.format,
-    omitBackground: params.omitBackground,
-    fullPage: params.fullPage,
-  };
-
-  if (screenShotOptions.type != 'png') {
-    screenShotOptions.quality = params.quality;
-  }
+  const defaultAnimation: Animation[] = [
+    {
+      wait: 1000,
+      top: 500,
+      left: 0,
+      behavior: 'smooth',
+    },
+  ];
 
   try {
     page.setViewport({
@@ -113,7 +111,12 @@ export const takeVideo = async (page: Page, params: ScreenshotParams) => {
   try {
     const recorder = new PuppeteerScreenRecorder(page);
     await recorder.start(`${tempFolder}/${fileName}.mp4`);
-    await animate(page);
+
+    const animations = params.animation
+      ? parseAnimation(params.animation)
+      : defaultAnimation;
+
+    await animate(page, animations);
     await recorder.stop();
   } catch (err) {
     throw new Error('Failed to take screenshot');
@@ -123,21 +126,71 @@ export const takeVideo = async (page: Page, params: ScreenshotParams) => {
     video = readFileSync(`${tempFolder}/${fileName}.mp4`, null);
   } catch (err) {
     throw new Error('Failed to read video file.');
+  } finally {
+    unlinkSync(`${tempFolder}/${fileName}.mp4`);
   }
 
   return video;
 };
 
-const animate = async (page: Page) => {
+const animate = async (page: Page, animations: Animation[]) => {
   await wait(500);
-  await page.evaluate(() => {
-    window.scrollBy({ top: 500, left: 0, behavior: 'smooth' });
-  });
-  await wait(500);
-  await page.evaluate(() => {
-    window.scrollBy({ top: 1000, left: 0, behavior: 'smooth' });
-  });
-  await wait(1000);
+  for (let i = 0; i < animations.length; i++) {
+    const animation = animations[i];
+
+    await page.evaluate(() => {
+      window.scrollBy({
+        top: animation.top,
+        left: animation.left,
+        behavior: animation.behavior,
+      });
+    });
+    await wait(animation.wait);
+  }
+};
+
+const parseAnimation = (animation: string) => {
+  const animations: Animation[] = [];
+  const split = animation.split(':');
+  for (let i = 0; i < split.length; i++) {
+    const frame = split[i];
+    const frameSplit = frame.split(',');
+
+    const wait = Number(frameSplit[0]);
+    if (Number.isNaN(wait))
+      throw new Error(
+        `Animation Wait must be a number, you passed in "${frameSplit[0]}".`
+      );
+
+    const top = Number(frameSplit[1]);
+    if (Number.isNaN(top))
+      throw new Error(
+        `Animation Top must be a number, you passed in "${frameSplit[1]}".`
+      );
+
+    const left = Number(frameSplit[2]);
+    if (Number.isNaN(left))
+      throw new Error(
+        `Animation Left must be a number, you passed in "${frameSplit[2]}".`
+      );
+
+    const behavior = frameSplit[3];
+    if (behavior != 'auto' && behavior != 'instant' && behavior != 'smooth') {
+      throw new Error(
+        `Animation Behavior must be "auto", "instant", or "smooth", you passed in "${frameSplit[3]}".`
+      );
+    }
+
+    const frameObject: Animation = {
+      wait: wait,
+      top: top,
+      left: left,
+      behavior: behavior,
+    };
+    animations.push(frameObject);
+  }
+
+  return animations;
 };
 
 const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));

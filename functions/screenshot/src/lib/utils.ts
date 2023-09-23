@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { get } from 'https';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { ScreenshotParams } from '../types/types.js';
+import { ScreenshotParams, VideoParams } from '../types/types.js';
 
 export const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
@@ -124,6 +124,64 @@ export const parseScreenshotQueryParams = (queryParams: any) => {
     omitBackground: omitBackground,
     darkMode: darkMode,
     darkModeString: darkModeString,
+  };
+
+  return params;
+};
+
+export const parseVideoQueryParams = (queryParams: any) => {
+  const width = queryParams.width ? Number(queryParams.width) : 1920;
+  if (Number.isNaN(width))
+    throw new Error(
+      `Width must be a number, you passed in "${queryParams.width}".`
+    );
+
+  if (width < 500) {
+    throw new Error(
+      `Width must be greater than 500, you passed in "${queryParams.width}".`
+    );
+  }
+
+  const height = queryParams.height ? Number(queryParams.height) : 1080;
+  if (Number.isNaN(height))
+    throw new Error(
+      `Height must be a number, you passed in "${queryParams.height}".`
+    );
+
+  if (height < 500) {
+    throw new Error(
+      `Height must be greater than 500, you passed in "${queryParams.height}".`
+    );
+  }
+
+  const scale = queryParams.scale ? Number(queryParams.scale) : 1;
+  if (Number.isNaN(scale))
+    throw new Error(
+      `Scale must be a number, you passed in "${queryParams.scale}".`
+    );
+
+  const darkMode = queryParams.darkMode ? Boolean(queryParams.darkMode) : false;
+
+  if (
+    queryParams.darkMode &&
+    queryParams.darkMode != 'true' &&
+    queryParams.darkMode != 'false'
+  )
+    throw new Error(
+      `DarkMode must be a "true" or "false", you passed in "${queryParams.darkMode}".`
+    );
+
+  const animation = queryParams.animation;
+
+  const darkModeString = darkMode ? 'dark' : 'light';
+
+  const params: VideoParams = {
+    width: width,
+    height: height,
+    scale: scale,
+    darkMode: darkMode,
+    darkModeString: darkModeString,
+    animation: animation,
   };
 
   return params;
