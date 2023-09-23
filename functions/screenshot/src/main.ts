@@ -17,6 +17,10 @@ export default async ({ req, res, log, error }: Context) => {
     execSync('apk add --no-cache nss udev ttf-freefont chromium');
   }
 
+  if (req.headers['x-appwrite-trigger'] === 'schedule') {
+    res.json({ keep_alive: true });
+  }
+
   const cache = 1440; //24 hours in seconds
 
   const queryParams = req.query;
