@@ -37,7 +37,7 @@ function generate() {
 
 async function generateMetadata(value) {
   setMetadataLoading(true);
-  const response = await fetch(`http://api.jibby.space/metadata/${value}`);
+  const response = await fetch(`https://api.jibby.space/metadata/${value}`);
   const metadata = await response.json();
 
   const jsonString = JSON.stringify(metadata, null, 2);
@@ -53,7 +53,7 @@ function generateScreenshot(value) {
   screenshot.innerHTML = '';
 
   const child = document.createElement('img');
-  child.src = `http://api.jibby.space/screenshot/${value}`;
+  child.src = `https://api.jibby.space/screenshot/${value}`;
   screenshot.appendChild(child);
 
   child.onload = () => {
@@ -67,7 +67,7 @@ function generateVideo(value) {
   video.innerHTML = '';
 
   const child = document.createElement('video');
-  child.src = `http://api.jibby.space/video/${value}`;
+  child.src = `https://api.jibby.space/video/${value}`;
   child.controls = true;
   child.autoplay = true;
   child.loop = true;
