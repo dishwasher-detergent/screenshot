@@ -1,4 +1,4 @@
-# screenshot
+# Screenshot
 
 ## 🧰 Usage
 
@@ -34,7 +34,7 @@ Sample `200` Response:
 ## ⚙️ Configuration
 
 | Setting           | Value         |
-|-------------------|---------------|
+| ----------------- | ------------- |
 | Runtime           | Node (18.0)   |
 | Entrypoint        | `src/main.js` |
 | Build Commands    | `npm install` |
