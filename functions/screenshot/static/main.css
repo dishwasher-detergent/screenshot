@@ -330,8 +330,7 @@ pre {
 
 .footer .content {
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
+  flex-direction: column;
   gap: 1rem;
   align-items: center;
   justify-content: center;

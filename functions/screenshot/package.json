@@ -10,6 +10,8 @@
     "dev": "tsc && node dist/main.js"
   },
   "dependencies": {
+    "@hono/node-server": "^1.2.0",
+    "hono": "^3.7.2",
     "node-cache": "^5.1.2",
     "puppeteer": "13.4.1",
     "puppeteer-screen-recorder": "^2.1.2",

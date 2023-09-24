@@ -3,7 +3,7 @@ const input = document.getElementById('search');
 window.onload = () => {
   const value = input.value;
   setDisplayUrl(value);
-  generate(value);
+  generate();
 };
 
 input.addEventListener('keyup', function (event) {
@@ -30,7 +30,7 @@ input.addEventListener('keydown', function (event) {
 });
 
 function generate() {
-  const value = document.getElementById('search').value;
+  const value = encodeURIComponent(document.getElementById('search').value);
   generateMetadata(value);
   generateScreenshot(value);
   generateVideo(value);
@@ -68,7 +68,7 @@ function generateVideo(value) {
   video.innerHTML = '';
 
   const child = document.createElement('video');
-  child.src = `https://api.jibby.space/video/${value}`;
+  child.src = `https://api.jibby.space/record/${value}`;
   child.controls = true;
   child.autoplay = true;
   child.loop = true;
@@ -123,7 +123,6 @@ function isValidUrl(url) {
 }
 
 function copyToClipboard(value) {
-  console.log(value);
   const url = document.getElementById(value).value;
   navigator.clipboard.writeText(url);
 }

@@ -20,7 +20,7 @@ export const spawnBrowser = async (url: string) => {
   const page = await browser.newPage();
 
   await page.goto(url, {
-    waitUntil: 'networkidle0',
+    waitUntil: 'networkidle2',
   });
 
   return { browser, page };
@@ -67,7 +67,7 @@ export const takeScreenshot = async (page: Page, params: ScreenshotParams) => {
       ...screenShotOptions,
       ...clip,
     });
-  } catch (err) {
+  } catch (err: any) {
     throw new Error('Failed to take screenshot.');
   }
 

@@ -1,193 +1,53 @@
 import { execSync } from 'child_process';
 import { accessSync, constants } from 'fs';
+import { Hono } from 'hono';
 import NodeCache from 'node-cache';
-import { extname } from 'path';
-import zlib from 'zlib';
 
-import { spawnBrowser, takeScreenshot, takeVideo } from './lib/browser.js';
-import {
-  getStaticFile,
-  joinQueryParams,
-  parseScreenshotQueryParams,
-  parseVideoQueryParams,
-} from './lib/utils.js';
+import { cors } from 'hono/cors';
+import { requestFromContext, responseForContext } from './lib/utils.js';
+import { CSS, Home, JS } from './pages/home.js';
+import { Metadata } from './pages/metadata.js';
+import { Record } from './pages/record.js';
+import { Screenshot } from './pages/screenshot.js';
 import { Context } from './types/types.js';
 
 const cache = 1440; //24 hours in seconds
 const nodeCache = new NodeCache({ stdTTL: cache, checkperiod: cache + 60 });
 
-export default async ({ req, res, log, error }: Context) => {
+const app = new Hono();
+
+app.use('*', cors());
+
+// Error Handling
+app.onError((err, c) => {
+  return c.json(err, 500);
+});
+
+// Static pages
+Home(app);
+CSS(app);
+JS(app);
+
+// API Routes
+Screenshot(app, nodeCache, cache);
+Record(app, nodeCache, cache);
+Metadata(app, nodeCache, cache);
+
+export default async (context: Context) => {
+  // Until larger builds get fixed I need to do this, once larger builds are fixed and I can include chrome in my build process this will go away.
   try {
     accessSync('/usr/bin/chromium-browser', constants.R_OK | constants.W_OK);
   } catch (err) {
     execSync('apk add --no-cache nss udev ttf-freefont chromium');
   }
 
-  if (req.headers['x-appwrite-trigger'] === 'schedule') {
-    res.json({ keep_alive: true });
+  // Keeps the function warm
+  if (context.req.headers['x-appwrite-trigger'] === 'schedule') {
+    context.res.json({ keep_alive: true });
   }
 
-  const queryParams = req.query;
+  const request = requestFromContext(context);
+  const response = await app.request(request);
 
-  const fullPath = req.path;
-
-  const firstSlashIndex = fullPath.indexOf('/') + 1;
-  let secondSlashIndex = fullPath.indexOf('/', firstSlashIndex + 1);
-
-  const path = req.path.slice(firstSlashIndex, secondSlashIndex);
-  const url = fullPath.slice(secondSlashIndex + 1);
-  const cacheKey = fullPath + joinQueryParams(queryParams);
-
-  if (!url) {
-    return res.send('No URL specified!', 500);
-  }
-
-  if (queryParams.cache == 'flush') {
-    nodeCache.flushAll();
-    return res.send('Cache flushed!', 200);
-  }
-
-  if (nodeCache.has(cacheKey)) {
-    const cachedData: string | undefined = nodeCache.get(cacheKey);
-    if (cachedData == undefined) return res.send('Cache error!', 500);
-
-    if (path == 'screenshot') {
-      const compressedBuffer = Buffer.from(cachedData, 'base64');
-      const buffer = zlib.inflateSync(compressedBuffer);
-
-      return res.send(buffer, 200, {
-        'Content-Type': `image/${queryParams.format ?? 'webp'}`,
-        'Cache-Control': `public, max-age=${cache}`,
-        'Access-Control-Allow-Origin': '*',
-      });
-    }
-
-    if (path == 'video') {
-      const compressedBuffer = Buffer.from(cachedData, 'base64');
-      const buffer = zlib.inflateSync(compressedBuffer);
-
-      return res.send(buffer, 200, {
-        'Content-Type': 'video/mp4',
-        'Cache-Control': `public, max-age=${cache}`,
-        'Access-Control-Allow-Origin': '*',
-      });
-    }
-
-    if (path == 'metadata') {
-      const metadata = JSON.parse(cachedData);
-
-      return res.send(metadata, 200, {
-        'Content-Type': 'application/json',
-        'Cache-Control': `public, max-age=${cache}`,
-        'Access-Control-Allow-Origin': '*',
-      });
-    }
-  }
-
-  if (path == 'metadata' || path == 'screenshot' || path == 'video') {
-    const { browser, page } = await spawnBrowser(url);
-
-    if (path == 'screenshot') {
-      try {
-        const params = parseScreenshotQueryParams(queryParams);
-        const screenshot = await takeScreenshot(page, params);
-        await browser.close();
-
-        const compressedBuffer = zlib.deflateSync(screenshot);
-        const compressedString = compressedBuffer.toString('base64');
-        nodeCache.set(cacheKey, compressedString);
-
-        return res.send(screenshot, 200, {
-          'Content-Type': `image/${queryParams.format ?? 'png'}`,
-          'Cache-Control': `public, max-age=${cache}`,
-          'Access-Control-Allow-Origin': '*',
-        });
-      } catch (err) {
-        return res.send(
-          {
-            error: (err as Error).message,
-          },
-          500,
-          {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-          }
-        );
-      }
-    }
-
-    if (path == 'video') {
-      try {
-        const params = parseVideoQueryParams(queryParams);
-        const videoFile = await takeVideo(page, params);
-        await browser.close();
-
-        const compressedBuffer = zlib.deflateSync(videoFile);
-        const compressedString = compressedBuffer.toString('base64');
-        nodeCache.set(cacheKey, compressedString);
-
-        return res.send(videoFile, 200, {
-          'Content-Type': 'video/mp4',
-          'Cache-Control': `public, max-age=${cache}`,
-          'Access-Control-Allow-Origin': '*',
-        });
-      } catch (err) {
-        return res.send(
-          {
-            error: (err as Error).message,
-          },
-          500,
-          {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-          }
-        );
-      }
-    }
-
-    if (path == 'metadata') {
-      const metadata = await page.evaluate(() => {
-        const metaTagsArray: any[] = [];
-        const metaTags = document.querySelectorAll('meta');
-
-        metaTags.forEach((metaTag) => {
-          const attributes: any = {};
-
-          for (const attr of metaTag.attributes) {
-            attributes[attr.name] = attr.value;
-          }
-
-          metaTagsArray.push(attributes);
-        });
-
-        return metaTagsArray;
-      });
-
-      await browser.close();
-
-      nodeCache.set(cacheKey, JSON.stringify(metadata));
-
-      return res.send(metadata, 200, {
-        'Content-Type': 'application/json',
-        'Cache-Control': `public, max-age=${cache}`,
-        'Access-Control-Allow-Origin': '*',
-      });
-    }
-  }
-
-  if (secondSlashIndex == -1 && /\.html$|\.css$|\.js$/.test(fullPath)) {
-    const file = fullPath.substring(1);
-
-    const extension = extname(file);
-
-    return res.send(getStaticFile(file), 200, {
-      'Content-Type': `text/${extension.substring(1)}; charset=utf-8`,
-      'Access-Control-Allow-Origin': '*',
-    });
-  }
-
-  return res.send(getStaticFile('index.html'), 200, {
-    'Content-Type': 'text/html; charset=utf-8',
-    'Access-Control-Allow-Origin': '*',
-  });
+  return await responseForContext(context, response);
 };
