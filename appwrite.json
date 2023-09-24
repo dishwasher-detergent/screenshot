@@ -10,7 +10,7 @@
                 "any"
             ],
             "events": [],
-            "schedule": "",
+            "schedule": "*/30 * * * *",
             "timeout": 30,
             "enabled": true,
             "logging": true,
