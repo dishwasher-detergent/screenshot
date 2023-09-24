@@ -1,14 +1,20 @@
 import { execSync } from 'child_process';
 import { accessSync, constants } from 'fs';
-
+import NodeCache from 'node-cache';
 import { extname } from 'path';
+import zlib from 'zlib';
+
 import { spawnBrowser, takeScreenshot, takeVideo } from './lib/browser.js';
 import {
   getStaticFile,
+  joinQueryParams,
   parseScreenshotQueryParams,
   parseVideoQueryParams,
 } from './lib/utils.js';
 import { Context } from './types/types.js';
+
+const cache = 1440; //24 hours in seconds
+const nodeCache = new NodeCache({ stdTTL: cache, checkperiod: cache + 60 });
 
 export default async ({ req, res, log, error }: Context) => {
   try {
@@ -21,8 +27,6 @@ export default async ({ req, res, log, error }: Context) => {
     res.json({ keep_alive: true });
   }
 
-  const cache = 1440; //24 hours in seconds
-
   const queryParams = req.query;
 
   const fullPath = req.path;
@@ -32,9 +36,52 @@ export default async ({ req, res, log, error }: Context) => {
 
   const path = req.path.slice(firstSlashIndex, secondSlashIndex);
   const url = fullPath.slice(secondSlashIndex + 1);
+  const cacheKey = fullPath + joinQueryParams(queryParams);
 
   if (!url) {
     return res.send('No URL specified!', 500);
+  }
+
+  if (queryParams.cache == 'flush') {
+    nodeCache.flushAll();
+    return res.send('Cache flushed!', 200);
+  }
+
+  if (nodeCache.has(cacheKey)) {
+    const cachedData: string | undefined = nodeCache.get(cacheKey);
+    if (cachedData == undefined) return res.send('Cache error!', 500);
+
+    if (path == 'screenshot') {
+      const compressedBuffer = Buffer.from(cachedData, 'base64');
+      const buffer = zlib.inflateSync(compressedBuffer);
+
+      return res.send(buffer, 200, {
+        'Content-Type': `image/${queryParams.format ?? 'webp'}`,
+        'Cache-Control': `public, max-age=${cache}`,
+        'Access-Control-Allow-Origin': '*',
+      });
+    }
+
+    if (path == 'video') {
+      const compressedBuffer = Buffer.from(cachedData, 'base64');
+      const buffer = zlib.inflateSync(compressedBuffer);
+
+      return res.send(buffer, 200, {
+        'Content-Type': 'video/mp4',
+        'Cache-Control': `public, max-age=${cache}`,
+        'Access-Control-Allow-Origin': '*',
+      });
+    }
+
+    if (path == 'metadata') {
+      const metadata = JSON.parse(cachedData);
+
+      return res.send(metadata, 200, {
+        'Content-Type': 'application/json',
+        'Cache-Control': `public, max-age=${cache}`,
+        'Access-Control-Allow-Origin': '*',
+      });
+    }
   }
 
   if (path == 'metadata' || path == 'screenshot' || path == 'video') {
@@ -45,6 +92,10 @@ export default async ({ req, res, log, error }: Context) => {
         const params = parseScreenshotQueryParams(queryParams);
         const screenshot = await takeScreenshot(page, params);
         await browser.close();
+
+        const compressedBuffer = zlib.deflateSync(screenshot);
+        const compressedString = compressedBuffer.toString('base64');
+        nodeCache.set(cacheKey, compressedString);
 
         return res.send(screenshot, 200, {
           'Content-Type': `image/${queryParams.format ?? 'png'}`,
@@ -68,10 +119,12 @@ export default async ({ req, res, log, error }: Context) => {
     if (path == 'video') {
       try {
         const params = parseVideoQueryParams(queryParams);
-        log(params);
         const videoFile = await takeVideo(page, params);
-
         await browser.close();
+
+        const compressedBuffer = zlib.deflateSync(videoFile);
+        const compressedString = compressedBuffer.toString('base64');
+        nodeCache.set(cacheKey, compressedString);
 
         return res.send(videoFile, 200, {
           'Content-Type': 'video/mp4',
@@ -109,6 +162,10 @@ export default async ({ req, res, log, error }: Context) => {
 
         return metaTagsArray;
       });
+
+      await browser.close();
+
+      nodeCache.set(cacheKey, JSON.stringify(metadata));
 
       return res.send(metadata, 200, {
         'Content-Type': 'application/json',

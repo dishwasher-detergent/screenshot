@@ -259,6 +259,11 @@ pre {
   object-fit: cover;
 }
 
+.option_table {
+  width: 100%;
+  overflow-x: auto;
+}
+
 .option {
   font-family: monospace;
   width: 100%;
@@ -287,6 +292,7 @@ pre {
 
 .option .row > * {
   width: 33%;
+  min-width: 16rem;
   flex: none;
 }
 

@@ -3,6 +3,7 @@ const input = document.getElementById('search');
 window.onload = () => {
   const value = input.value;
   setDisplayUrl(value);
+  generate(value);
 };
 
 input.addEventListener('keyup', function (event) {

@@ -28,17 +28,29 @@ export const fetchHTML = (url: string): Promise<string> => {
 };
 
 export const parseScreenshotQueryParams = (queryParams: any) => {
-  const width = queryParams.width ? Number(queryParams.width) : 1920;
+  const width = queryParams.width ? Number(queryParams.width) : 1280;
   if (Number.isNaN(width))
     throw new Error(
       `Width must be a number, you passed in "${queryParams.width}".`
     );
 
-  const height = queryParams.height ? Number(queryParams.height) : 1080;
+  if (width > 1280) {
+    throw new Error(
+      `Width must be less than 1280, you passed in "${queryParams.width}".`
+    );
+  }
+
+  const height = queryParams.height ? Number(queryParams.height) : 720;
   if (Number.isNaN(height))
     throw new Error(
       `Height must be a number, you passed in "${queryParams.height}".`
     );
+
+  if (height > 720) {
+    throw new Error(
+      `Height must be less than 720, you passed in "${queryParams.height}".`
+    );
+  }
 
   const scale = queryParams.scale ? Number(queryParams.scale) : 1;
   if (Number.isNaN(scale))
@@ -109,7 +121,7 @@ export const parseScreenshotQueryParams = (queryParams: any) => {
   const darkModeString = darkMode ? 'dark' : 'light';
 
   let clip = false;
-  if (clipX && clipX) clip = true;
+  if (queryParams.clipY && queryParams.clipX) clip = true;
 
   const params: ScreenshotParams = {
     width: width,
@@ -130,7 +142,7 @@ export const parseScreenshotQueryParams = (queryParams: any) => {
 };
 
 export const parseVideoQueryParams = (queryParams: any) => {
-  const width = queryParams.width ? Number(queryParams.width) : 1920;
+  const width = queryParams.width ? Number(queryParams.width) : 1280;
   if (Number.isNaN(width))
     throw new Error(
       `Width must be a number, you passed in "${queryParams.width}".`
@@ -142,7 +154,13 @@ export const parseVideoQueryParams = (queryParams: any) => {
     );
   }
 
-  const height = queryParams.height ? Number(queryParams.height) : 1080;
+  if (width > 1280) {
+    throw new Error(
+      `Width must be less than 1280, you passed in "${queryParams.width}".`
+    );
+  }
+
+  const height = queryParams.height ? Number(queryParams.height) : 720;
   if (Number.isNaN(height))
     throw new Error(
       `Height must be a number, you passed in "${queryParams.height}".`
@@ -151,6 +169,12 @@ export const parseVideoQueryParams = (queryParams: any) => {
   if (height < 500) {
     throw new Error(
       `Height must be greater than 500, you passed in "${queryParams.height}".`
+    );
+  }
+
+  if (height > 720) {
+    throw new Error(
+      `Height must be less than 720, you passed in "${queryParams.height}".`
     );
   }
 
@@ -189,4 +213,17 @@ export const parseVideoQueryParams = (queryParams: any) => {
 
 export const getStaticFile = (fileName: string) => {
   return readFileSync(path.join(staticFolder, fileName)).toString();
+};
+
+export const joinQueryParams = (queryParams: any) => {
+  if (queryParams) {
+    return (
+      '?' +
+      Object.keys(queryParams)
+        .map((key) => `${key}=${queryParams[key]}`)
+        .join('&')
+    );
+  } else {
+    return '';
+  }
 };
