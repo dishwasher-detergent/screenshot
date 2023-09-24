@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import { Hono } from 'hono';
+
 import { staticFolder } from '../lib/utils.js';
 
 export function Home(app: Hono) {

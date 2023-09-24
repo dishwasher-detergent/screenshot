@@ -2,6 +2,7 @@ import { readFileSync } from 'fs';
 import { get } from 'https';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
 import { ScreenshotParams, VideoParams } from '../types/types.js';
 
 export const __filename = fileURLToPath(import.meta.url);
@@ -146,7 +147,7 @@ export const parseScreenshotQueryParams = (queryParams: any) => {
 };
 
 export const parseVideoQueryParams = (queryParams: any) => {
-  const width = queryParams.width ? Number(queryParams.width[0]) : 1280;
+  const width = queryParams.width ? Number(queryParams.width[0]) : 852;
   if (Number.isNaN(width))
     throw new Error(
       `Width must be a number, you passed in "${queryParams.width[0]}".`
@@ -164,13 +165,13 @@ export const parseVideoQueryParams = (queryParams: any) => {
     );
   }
 
-  const height = queryParams.height ? Number(queryParams.height[0]) : 720;
+  const height = queryParams.height ? Number(queryParams.height[0]) : 480;
   if (Number.isNaN(height))
     throw new Error(
       `Height must be a number, you passed in "${queryParams.height[0]}".`
     );
 
-  if (height < 500) {
+  if (height < 480) {
     throw new Error(
       `Height must be greater than 500, you passed in "${queryParams.height[0]}".`
     );

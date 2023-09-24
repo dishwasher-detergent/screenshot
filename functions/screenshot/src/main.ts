@@ -1,9 +1,9 @@
 import { execSync } from 'child_process';
 import { accessSync, constants } from 'fs';
 import { Hono } from 'hono';
+import { cors } from 'hono/cors';
 import NodeCache from 'node-cache';
 
-import { cors } from 'hono/cors';
 import { requestFromContext, responseForContext } from './lib/utils.js';
 import { CSS, Home, JS } from './pages/home.js';
 import { Metadata } from './pages/metadata.js';

@@ -1,6 +1,10 @@
 import { readFileSync, unlinkSync } from 'fs';
 import puppeteer, { Page, ScreenshotOptions } from 'puppeteer';
-import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder';
+import {
+  PuppeteerScreenRecorder,
+  PuppeteerScreenRecorderOptions,
+} from 'puppeteer-screen-recorder';
+
 import { Animation, ScreenshotParams, VideoParams } from '../types/types.js';
 import { tempFolder } from './utils.js';
 
@@ -108,8 +112,17 @@ export const takeVideo = async (page: Page, params: VideoParams) => {
 
   const fileName = createFileName();
 
+  const Config: PuppeteerScreenRecorderOptions = {
+    followNewTab: false,
+    fps: 24,
+    videoBitrate: 250,
+    videoCrf: 40,
+    aspectRatio: '16:9',
+    recordDurationLimit: 6,
+  };
+
   try {
-    const recorder = new PuppeteerScreenRecorder(page);
+    const recorder = new PuppeteerScreenRecorder(page, Config);
     await recorder.start(`${tempFolder}/${fileName}.mp4`);
 
     const animations = params.animation
