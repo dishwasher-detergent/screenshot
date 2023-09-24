@@ -266,7 +266,6 @@ pre {
 
 .option {
   font-family: monospace;
-  width: 100%;
   display: flex;
   flex-direction: column;
   color: #fff;
@@ -277,7 +276,6 @@ pre {
   flex-direction: row;
   flex-wrap: nowrap;
   font-size: 1rem;
-  gap: 1rem;
   align-items: flex-start;
   padding: 1rem 0;
   border-bottom: 1px solid #0f172a;
@@ -320,6 +318,35 @@ pre {
   color: #fff;
   font-size: 1rem;
   padding: 1rem 0;
+}
+
+.footer {
+  width: 100%;
+  color: #fff;
+  padding: 2rem 0;
+  max-width: 80rem;
+  margin: 0 auto 0 auto;
+}
+
+.footer .content {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer .content a {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.footer .content .heart {
+  color: #f87171;
+  font-size: 1.25rem;
 }
 
 .loading {
