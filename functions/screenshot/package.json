@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/main.js",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "build": "tsc",
