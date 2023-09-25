@@ -9,8 +9,6 @@ import { Animation, ScreenshotParams, VideoParams } from '../types/types.js';
 import { tempFolder } from './utils.js';
 
 export const spawnBrowser = async (url: string, options: any = {}) => {
-  const options = options;
-
   const browser = await puppeteer.launch({
     executablePath: '/usr/bin/chromium-browser',
     headless: true,
