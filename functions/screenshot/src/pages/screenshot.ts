@@ -32,7 +32,9 @@ export function Screenshot(
         }
       }
 
-      const { browser, page } = await spawnBrowser(urlDecoded);
+      const { browser, page } = await spawnBrowser(urlDecoded, {
+        waitUntil: 'networkidle2',
+      });
 
       const screenshot = await takeScreenshot(page, params);
 

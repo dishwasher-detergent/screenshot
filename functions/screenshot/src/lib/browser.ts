@@ -8,7 +8,9 @@ import {
 import { Animation, ScreenshotParams, VideoParams } from '../types/types.js';
 import { tempFolder } from './utils.js';
 
-export const spawnBrowser = async (url: string) => {
+export const spawnBrowser = async (url: string, options: any = {}) => {
+  const options = options;
+
   const browser = await puppeteer.launch({
     executablePath: '/usr/bin/chromium-browser',
     headless: true,
@@ -23,11 +25,7 @@ export const spawnBrowser = async (url: string) => {
 
   const page = await browser.newPage();
 
-  await Promise.all([
-    page.goto(url, {
-      waitUntil: "domcontentloaded",
-    }),
-  ]);
+  await page.goto(url, options);
 
   return { browser, page };
 };
