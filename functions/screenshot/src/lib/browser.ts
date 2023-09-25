@@ -27,7 +27,6 @@ export const spawnBrowser = async (url: string) => {
     page.goto(url, {
       waitUntil: "domcontentloaded",
     }),
-    page.waitForNetworkIdle({ idleTime: 100 }),
   ]);
 
   return { browser, page };
