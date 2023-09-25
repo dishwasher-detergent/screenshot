@@ -5,6 +5,10 @@ import { staticFolder } from '../lib/utils.js';
 
 export function Home(app: Hono) {
   app.get('/', (c) => {
+    if(c.req.header('x-appwrite-trigger') === 'schedule') {
+      return c.json({schedule: true});
+    }
+    
     const filePath = staticFolder + '/index.html';
     const html = readFileSync(filePath);
     return c.html(html.toString());
