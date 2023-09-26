@@ -33,7 +33,7 @@ export function Record(
       }
 
       const { browser, page } = await spawnBrowser(urlDecoded, {
-        waitUntil: 'networkidle0',
+        waitUntil: 'domcontentloaded',
       });
 
       const videoFile = await takeVideo(page, params);

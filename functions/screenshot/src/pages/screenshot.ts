@@ -33,7 +33,7 @@ export function Screenshot(
       }
 
       const { browser, page } = await spawnBrowser(urlDecoded, {
-        waitUntil: 'networkidle0',
+        waitUntil: 'domcontentloaded',
       });
 
       const screenshot = await takeScreenshot(page, params);
