@@ -15,7 +15,7 @@
             "enabled": true,
             "logging": true,
             "entrypoint": "dist/main.js",
-            "commands": "npm install --ignore-scripts && npm run build && node node_modules/puppeteer/install.js",
+            "commands": "npm install --ignore-scripts && npm run build",
             "ignore": [
                 "node_modules",
                 ".npm"

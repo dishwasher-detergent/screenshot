@@ -66,7 +66,7 @@ function generateScreenshot(value) {
   child.onerror = () => {
     document.getElementById('screenshot').innerHTML =
       '<p class="error">Error Generating Image</p>';
-    setVideoLoading(false);
+    setScreenshotLoading(false);
   };
 }
 
