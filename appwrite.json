@@ -1,10 +1,10 @@
 {
-    "projectId": "screenshot",
+    "projectId": "jibby",
     "projectName": "",
     "functions": [
         {
-            "$id": "screenshot",
-            "name": "screenshot",
+            "$id": "jibby",
+            "name": "jibby",
             "runtime": "node-18.0",
             "execute": [
                 "any"
@@ -15,7 +15,7 @@
             "enabled": true,
             "logging": true,
             "entrypoint": "dist/main.js",
-            "commands": "npm install --ignore-scripts && npm run build",
+            "commands": "npm install --ignore-scripts && npm run build && node node_modules/puppeteer/install.js",
             "ignore": [
                 "node_modules",
                 ".npm"

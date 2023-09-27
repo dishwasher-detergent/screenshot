@@ -183,7 +183,7 @@ export const parseVideoQueryParams = (queryParams: any) => {
     );
   }
 
-  const scale = queryParams.scale ? Number(queryParams.scale[0]) : 1;
+  const scale = queryParams.scale ? Number(queryParams.scale[0]) : 0.5;
   if (Number.isNaN(scale))
     throw new Error(
       `Scale must be a number, you passed in "${queryParams.scale[0]}".`

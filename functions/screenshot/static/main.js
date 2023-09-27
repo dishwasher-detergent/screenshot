@@ -2,6 +2,7 @@ const input = document.getElementById('search');
 
 window.onload = () => {
   const value = input.value;
+  setInputUrl(value);
   setDisplayUrl(value);
   generate();
 };
@@ -9,13 +10,7 @@ window.onload = () => {
 input.addEventListener('keyup', function (event) {
   const value = event.target.value;
 
-  document.getElementById(
-    'metadata_url'
-  ).value = `https://api.jibby.space/metadata/${value}`;
-  document.getElementById(
-    'screenshot_url'
-  ).value = `https://api.jibby.space/screenshot/${value}`;
-
+  setInputUrl(value);
   setDisplayUrl(value);
 
   if (!isValidUrl(value)) {
@@ -38,18 +33,25 @@ function generate() {
 
 async function generateMetadata(value) {
   setMetadataLoading(true);
-  const response = await fetch(`https://api.jibby.space/metadata/${value}`);
-  const metadata = await response.json();
 
-  const jsonString = JSON.stringify(metadata, null, 2);
-  const highlightedJson = hljs.highlight('json', jsonString).value;
+  try {
+    const response = await fetch(`https://api.jibby.space/metadata/${value}`);
+    const metadata = await response.json();
 
-  document.getElementById('metadata').innerHTML = highlightedJson;
+    const jsonString = JSON.stringify(metadata, null, 2);
+    const highlightedJson = hljs.highlight('json', jsonString).value;
+    document.getElementById('metadata').innerHTML = highlightedJson;
+  } catch (err) {
+    document.getElementById('metadata').innerHTML =
+      '<p class="error">Error Generating Metadata</p>';
+  }
+
   setMetadataLoading(false);
 }
 
 function generateScreenshot(value) {
   setScreenshotLoading(true);
+
   const screenshot = document.getElementById('screenshot');
   screenshot.innerHTML = '';
 
@@ -60,10 +62,17 @@ function generateScreenshot(value) {
   child.onload = () => {
     setScreenshotLoading(false);
   };
+
+  child.onerror = () => {
+    document.getElementById('screenshot').innerHTML =
+      '<p class="error">Error Generating Image</p>';
+    setVideoLoading(false);
+  };
 }
 
 function generateVideo(value) {
   setVideoLoading(true);
+
   const video = document.getElementById('video');
   video.innerHTML = '';
 
@@ -77,6 +86,12 @@ function generateVideo(value) {
   child.onload = () => {
     setVideoLoading(false);
   };
+
+  child.onerror = () => {
+    document.getElementById('video').innerHTML =
+      '<p class="error">Error Generating Video</p>';
+    setVideoLoading(false);
+  };
 }
 
 function setDisplayUrl(value) {
@@ -85,6 +100,20 @@ function setDisplayUrl(value) {
   for (let i = 0; i < elements.length; i++) {
     elements[i].textContent = value;
   }
+}
+
+function setInputUrl(value) {
+  const encodedVal = encodeURIComponent(value);
+
+  document.getElementById(
+    'metadata_url'
+  ).value = `https://api.jibby.space/metadata/${encodedVal}`;
+  document.getElementById(
+    'screenshot_url'
+  ).value = `https://api.jibby.space/screenshot/${encodedVal}`;
+  document.getElementById(
+    'video_url'
+  ).value = `https://api.jibby.space/video/${encodedVal}`;
 }
 
 function setMetadataLoading(value) {

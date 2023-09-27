@@ -320,6 +320,13 @@ pre {
   padding: 1rem 0;
 }
 
+.error {
+  font-weight: bold;
+  font-family: monospace;
+  color: #f87171;
+  padding: 1rem;
+}
+
 .footer {
   width: 100%;
   color: #fff;
