@@ -10,8 +10,8 @@
                 "any"
             ],
             "events": [],
-            "schedule": "*/30 * * * *",
-            "timeout": 30,
+            "schedule": "",
+            "timeout": 45,
             "enabled": true,
             "logging": true,
             "entrypoint": "dist/main.js",

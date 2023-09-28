@@ -7,7 +7,11 @@ export function Metadata(app: Hono, cacheDuration: number = 1440) {
     const url = c.req.param('url');
     const urlDecoded = decodeURIComponent(url);
 
-    const { browser, page } = await spawnBrowser(urlDecoded);
+    const { browser, page } = await spawnBrowser(urlDecoded).catch(async (err) => {
+      await browser.close();
+      throw new Error(err);
+    });
+    
     const metadata = await page.evaluate(() => {
       const metaTagsArray: any[] = [];
       const metaTags = document.querySelectorAll('meta');

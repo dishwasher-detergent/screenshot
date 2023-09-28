@@ -113,7 +113,7 @@ function setInputUrl(value) {
   ).value = `https://api.jibby.space/screenshot/${encodedVal}`;
   document.getElementById(
     'video_url'
-  ).value = `https://api.jibby.space/video/${encodedVal}`;
+  ).value = `https://api.jibby.space/record/${encodedVal}`;
 }
 
 function setMetadataLoading(value) {
