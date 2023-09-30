@@ -11,6 +11,9 @@ export function Screenshot(app: Hono, cacheDuration: number = 1440) {
 
     const { browser, page } = await spawnBrowser(urlDecoded, {
       waitUntil: 'domcontentloaded',
+    }).catch(async (err) => {
+      await browser.close();
+      throw new Error(err);
     });
 
     let screenshot;
@@ -33,11 +36,6 @@ export function Screenshot(app: Hono, cacheDuration: number = 1440) {
       c.header('Cache-Control', `public, max-age=${cacheDuration}`);
       return c.body(screenshot.toString('base64'));
     }
-
-    if (error) {
-      return c.json(error, 500);
-    }
-
     return c.json({ error: 'Failed with no message.' }, 500);
   });
 }

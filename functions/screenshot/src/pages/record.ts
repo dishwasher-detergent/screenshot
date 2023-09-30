@@ -12,7 +12,10 @@ export function Record(app: Hono, cacheDuration: number = 1440) {
     let videoFile;
     let error;
 
-    const { browser, page } = await spawnBrowser(urlDecoded);
+    const { browser, page } = await spawnBrowser(urlDecoded).catch(async (err) => {
+      await browser.close();
+      throw new Error(err);
+    });
 
     try {
       const params = parseVideoQueryParams(queryParams);
