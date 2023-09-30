@@ -15,7 +15,7 @@
             "enabled": true,
             "logging": true,
             "entrypoint": "dist/main.js",
-            "commands": "npm install --ignore-scripts && npm run build",
+            "commands": "apk update && apk fetch chromium nss freetype harfbuzz ca-certificates ttf-freefont && npm install --ignore-scripts && npm run build",
             "ignore": [
                 "node_modules",
                 ".npm"
