@@ -7,11 +7,10 @@ import { tempFolder } from './utils.js';
 
 export const spawnBrowser = async (url: string, options: any = {}) => {
   const browser = await puppeteer.launch({
-    executablePath: '/usr/bin/chromium-browser',
     headless: true,
+    executablePath: '/usr/bin/chromium-browser',
     args: [
       '--no-sandbox',
-      '--disable-setuid-sandbox',
       '--headless',
       '--disable-gpu',
       '--disable-dev-shm-usage',
