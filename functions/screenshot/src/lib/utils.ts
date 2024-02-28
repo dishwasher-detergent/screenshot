@@ -35,7 +35,7 @@ export const parseScreenshotQueryParams = (queryParams: any) => {
       `Width must be a number, you passed in "${queryParams.width[0]}".`
     );
 
-  if (width > 1280) {
+  if (width > 1920) {
     throw new Error(
       `Width must be less than 1280, you passed in "${queryParams.width[0]}".`
     );
@@ -47,7 +47,7 @@ export const parseScreenshotQueryParams = (queryParams: any) => {
       `Height must be a number, you passed in "${queryParams.height[0]}".`
     );
 
-  if (height > 720) {
+  if (height > 1080) {
     throw new Error(
       `Height must be less than 720, you passed in "${queryParams.height[0]}".`
     );
