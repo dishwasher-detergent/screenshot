@@ -35,7 +35,7 @@ async function generateMetadata(value) {
   setMetadataLoading(true);
 
   try {
-    const response = await fetch(`https://api.jibby.space/metadata/${value}`);
+    const response = await fetch(`https://6511a9d7aa283ecf10b1.appwrite.global/metadata/${value}`);
     const metadata = await response.json();
 
     const jsonString = JSON.stringify(metadata, null, 2);
@@ -56,7 +56,7 @@ function generateScreenshot(value) {
   screenshot.innerHTML = '';
 
   const child = document.createElement('img');
-  child.src = `https://api.jibby.space/screenshot/${value}`;
+  child.src = `https://6511a9d7aa283ecf10b1.appwrite.global/screenshot/${value}`;
   screenshot.appendChild(child);
 
   child.onload = () => {
@@ -77,7 +77,7 @@ function generateVideo(value) {
   video.innerHTML = '';
 
   const child = document.createElement('video');
-  child.src = `https://api.jibby.space/record/${value}`;
+  child.src = `https://6511a9d7aa283ecf10b1.appwrite.global/record/${value}`;
   child.controls = true;
   child.autoplay = true;
   child.loop = true;
@@ -107,13 +107,13 @@ function setInputUrl(value) {
 
   document.getElementById(
     'metadata_url'
-  ).value = `https://api.jibby.space/metadata/${encodedVal}`;
+  ).value = `https://6511a9d7aa283ecf10b1.appwrite.global/metadata/${encodedVal}`;
   document.getElementById(
     'screenshot_url'
-  ).value = `https://api.jibby.space/screenshot/${encodedVal}`;
+  ).value = `https://6511a9d7aa283ecf10b1.appwrite.global/screenshot/${encodedVal}`;
   document.getElementById(
     'video_url'
-  ).value = `https://api.jibby.space/record/${encodedVal}`;
+  ).value = `https://6511a9d7aa283ecf10b1.appwrite.global/record/${encodedVal}`;
 }
 
 function setMetadataLoading(value) {
