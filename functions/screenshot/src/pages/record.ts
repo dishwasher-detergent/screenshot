@@ -12,7 +12,9 @@ export function Record(app: Hono, cacheDuration: number = 1440) {
     let videoFile;
     let error;
 
-    const { browser, page } = await spawnBrowser(urlDecoded).catch(async (err) => {
+    const { browser, page } = await spawnBrowser(urlDecoded, {
+      waitUntil: 'networkidle2',
+    }).catch(async (err) => {
       await browser.close();
       throw new Error(err);
     });
