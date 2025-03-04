@@ -10,7 +10,7 @@ export function Screenshot(app: Hono, cacheDuration: number = 1440) {
     const queryParams = c.req.queries();
 
     const { browser, page } = await spawnBrowser(urlDecoded, {
-      waitUntil: 'domcontentloaded',
+      waitUntil: 'networkidle0',
     }).catch(async (err) => {
       await browser.close();
       throw new Error(err);
