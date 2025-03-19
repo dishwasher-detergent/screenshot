@@ -13,7 +13,7 @@ export function Record(app: Hono, cacheDuration: number = 1440) {
     let error;
 
     const { browser, page } = await spawnBrowser(urlDecoded, {
-      waitUntil: 'networkidle2',
+      waitUntil: 'domcontentloaded',
     }).catch(async (err) => {
       await browser.close();
       throw new Error(err);
